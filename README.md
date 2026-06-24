@@ -1,83 +1,22 @@
-# WHOOP Analytics — проект по аналитике восстановления
+# WHOOP Recovery Analytics
 
-**Цель проекта** — выявить, какие показатели сильнее всего влияют на восстановление (*Recovery*), построить модель, которая предсказывает хорошее восстановление, а также проверить, как связи отличаются по возрастным группам, и сформулировать практические рекомендации для сна/восстановления/здоровья.
+This project analyzes WHOOP data to understand what affects Recovery.
 
----
+The goal is to find which factors are most related to recovery, such as sleep, strain, HRV, resting heart rate, and age. The project also builds a machine learning model to predict whether recovery will be good or not.
 
-## 1) Вопросы, на которые отвечает проект
+I recently became a WHOOP user myself, so I was interested in exploring the data and finding patterns that could help improve sleep, recovery, and overall health.
 
-1. **Какие метрики сильнее всего связаны с Recovery?**  
-   — Что важнее: сон, нагрузка (*strain*), HRV/RHR, отклонения от базлайна и т.д.
+## Main Questions
 
-2. **Можно ли предсказывать “хорошее восстановление”?**  
-   — Построить классификатор `good_recovery` (например, `Recovery ≥ 67` как “зелёная зона”).
+- Which metrics have the strongest relationship with Recovery?
+- Can we predict good recovery?
+- How do recovery patterns differ by age group?
+- Are there different types of users based on their health and activity data?
+- What practical recommendations can help improve recovery?
 
-3. **Как различаются паттерны восстановления по возрасту?**  
-   — Сравнить распределения и драйверы Recovery в возрастных диапазонах.
+## Dataset
 
-4. **Какие есть “типы пользователей” по профилю метрик?**  
-   — Кластеризация пользователей по средним значениям (*user-level profiling*).
+The project uses the WHOOP fitness dataset:
 
-5. **Какие рекомендации можно дать для улучшения сна и восстановления?**  
-   — На основе результатов EDA/моделей и практик *sleep hygiene*.
-
----
-
-## 2) Данные
-
-Используется датасет WHOOP:
-
-- `whoop_fitness_dataset_100k.csv`
-
-**Примеры признаков** (в зависимости от доступных колонок в CSV):
-
-- `recovery_score`
-- сон: `sleep_hours`, `sleep_efficiency`, `wake_ups`, `time_to_fall_asleep` (если есть)
-- нагрузка: `day_strain`
-- физиология: `hrv`, `hrv_baseline`, `resting_heart_rate`, `rhr_baseline`
-- тренировки: `workout_type`, `workout_time_of_day`
-- пользовательские: `user_id`, `age`
-- дата: `date`
-
----
-
-## 3) Структура проекта (как в “gym” проекте)
-
-Проект оформлен в логике:
-
-### 3.1 Подготовка данных
-- проверка пропусков/дубликатов  
-- приведение типов (особенно `date`)  
-- заполнение категориальных пропусков (например, `workout_time_of_day = "No workout"`)
-
-### 3.2 Feature Engineering
-- ключевые фичи относительно базлайна:
-  - `hrv_delta = hrv - hrv_baseline`
-  - `rhr_delta = resting_heart_rate - rhr_baseline`
-- целевая переменная (классификация):
-  - `good_recovery = 1`, если `recovery_score >= 67`, иначе `0`  
-    *(порог соответствует “зелёной зоне” в трактовке WHOOP)*
-
-### 3.3 EDA (разведочный анализ)
-- распределения ключевых метрик  
-- корреляции  
-- сравнение по возрастным группам  
-- проверка гипотез (например, квартильные сравнения)
-
-### 3.4 Моделирование
-- baseline модель: **Логистическая регрессия**
-- нелинейная модель: **RandomForest**
-- разбиение train/test с учётом пользователей (**Group Split по `user_id`**),  
-  чтобы один пользователь не попал одновременно в train и test
-- метрики: `accuracy`, `ROC-AUC`, `classification_report`
-
-### 3.5 Кластеризация пользователей
-- агрегация по `user_id` (средние значения показателей)
-- стандартизация признаков (**StandardScaler**)
-- **KMeans** (например, `k=4`)
-- интерпретация кластеров через профили средних значений
-
-### 3.6 Выводы и рекомендации
-- что влияет на Recovery  
-- различия по возрастам  
-- практические советы (сон/нагрузка/восстановление)
+```text
+whoop_fitness_dataset_100k.csv
